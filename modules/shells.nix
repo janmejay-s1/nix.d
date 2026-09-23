@@ -33,6 +33,7 @@ in {
          doCheck = false;
        };
        work_pkgs = with p; [
+            libossp_uuid
             graphviz
             awscli2
             azure-cli
@@ -174,6 +175,21 @@ in {
           shellHook = ''
             export KUBECONFIG=$HOME/.kube/ob-dev-config
             export AWS_PROFILE=ob-dev
+            exec ${if system == "aarch64-darwin" then "/bin/zsh" else "$HOME/.nix-profile/bin/zsh"}
+          '';
+          buildInputs = [
+            p.sbt
+          ];
+        };
+
+        ob-sites = p.mkShell {
+          name = "ob-sites";
+          hardeningDisable = [ "all" ];
+          packages = work_pkgs;
+          shellHook = ''
+            export KUBECONFIG=$HOME/.kube/ob-sites-config
+            export OBS_K8S_SOCKS_PROXY=socks5://localhost:5000
+            export AWS_PROFILE=ob-sites
             exec ${if system == "aarch64-darwin" then "/bin/zsh" else "$HOME/.nix-profile/bin/zsh"}
           '';
           buildInputs = [
