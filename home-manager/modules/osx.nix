@@ -58,6 +58,14 @@ let
           } ];
         }
         {
+          description = "option+backspace: forward delete (delete char to the right of the cursor)";
+          manipulators = [ {
+            type = "basic";
+            from = { key_code = "delete_or_backspace"; modifiers = { mandatory = [ "option" ]; }; };
+            to = [ { key_code = "delete_forward"; } ];
+          } ];
+        }
+        {
           description = "caps_lock -> left_control";
           manipulators = [ {
             type = "basic";

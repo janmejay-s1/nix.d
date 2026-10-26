@@ -279,6 +279,9 @@ in{
               gopls.enable = true;
               rust_analyzer = {
                 enable = true;
+                # Use rustup's proxy from PATH so each project gets the
+                # rust-analyzer matching its rust-toolchain.toml.
+                package = null;
                 installCargo = false;
                 installRustc = false;
               };
