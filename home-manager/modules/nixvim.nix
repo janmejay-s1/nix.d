@@ -2,13 +2,18 @@
 let
   cfg = config.nixvim;
   mkRaw = lib.generators.mkLuaInline;
+  vertical = cfg.telescope.layout == "vertical";
+  telescope_layout_config = {
+    width = 0.95;
+  } // (
+    if vertical
+    then { height = 0.95; preview_height = cfg.telescope.previewSize; }
+    else { preview_width = cfg.telescope.previewSize; }
+  );
   telescope_picker_config = {
     symbol_width = 94;
     symbol_type_width = 10;
-    layout_config = {
-      width = 0.95;
-      preview_width = 0.5;
-    };
+    layout_config = telescope_layout_config;
   };
   telescope_dropdown_config = {
     winblend = 10;
@@ -30,6 +35,18 @@ in{
       default = "copilot";
       description = "The AI assistant to use in nixvim.";
     };
+    telescope = {
+      layout = lib.mkOption {
+        type = lib.types.enum [ "horizontal" "vertical" ];
+        default = "horizontal";
+        description = "Telescope layout: preview beside (horizontal) or above (vertical) the result list.";
+      };
+      previewSize = lib.mkOption {
+        type = lib.types.float;
+        default = 0.5;
+        description = "Fraction of the telescope window given to the preview.";
+      };
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -39,7 +56,12 @@ in{
       config = {
         nixpkgs.pkgs = pkgs;
         enable = true;
-        globals.mapleader = " ";
+        globals = {
+          mapleader = " ";
+          table_mode_map_prefix = "<leader>T";
+          table_mode_corner = "+";
+        };
+        extraPlugins = [ pkgs.vimPlugins.vim-table-mode ];
         opts = {
           title = true;
           titlestring = "nvim: %{fnamemodify(getcwd(), ':~')}";
@@ -383,7 +405,10 @@ in{
               fzf-native.enable = true;
             };
             settings = {
-              defaults = {
+              defaults = lib.optionalAttrs vertical {
+                layout_strategy = "vertical";
+                layout_config = telescope_layout_config;
+              } // {
                 mappings = {
                   i = {
                     "<C-f>" = mkRaw "require('telescope.actions').to_fuzzy_refine";
@@ -396,18 +421,12 @@ in{
                 find_files = {
                   follow = true;
                   hidden = true;
-                  layout_config = {
-                    width = 0.95;
-                    preview_width = 0.5;
-                  };
+                  layout_config = telescope_layout_config;
                 };
                 live_grep = {
                   follow = true;
                   additional_args = [ "--hidden" ];
-                  layout_config = {
-                    width = 0.95;
-                    preview_width = 0.5;
-                  };
+                  layout_config = telescope_layout_config;
                 };
                 registers = {
                   theme = "dropdown";

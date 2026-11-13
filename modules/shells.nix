@@ -36,11 +36,10 @@ in {
             libossp_uuid
             graphviz
             awscli2
-            azure-cli
             kubectl
             kubectx
             minikube
-            go_1_25
+            go
             delve
             clang
             k9s
@@ -158,6 +157,7 @@ in {
           hardeningDisable = [ "all" ];
           packages = work_pkgs;
           shellHook = ''
+            export NODE_USE_SYSTEM_CA=1
             export KUBECONFIG=$HOME/.kube/ob-config
             export OBS_K8S_SOCKS_PROXY=socks5://localhost:5000
             export AWS_PROFILE=ob
@@ -206,6 +206,7 @@ in {
             scalyr
           ];
           shellHook = ''
+            export NODE_USE_SYSTEM_CA=1
             export KUBECONFIG=$HOME/.kube/eks-config
             . ~/ob/.sec/env.sh
             PATH=$PATH:~/ob/tools

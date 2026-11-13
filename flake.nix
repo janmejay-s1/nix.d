@@ -139,7 +139,10 @@
         "janmejay@dell" = home-mgr-cfg-l "singh.janmejay@gmail.com";
         "janmejay@obsl" = home-mgr-cfg-l "singh.janmejay@gmail.com";
         "janmejay@jpl" = home-mgr-cfg-d { user = "janmejay"; email = "singh.janmejay@gmail.com"; ai = "copilot"; addons = []; };
-        "janmejay@js1" = home-mgr-cfg-d { user = "janmejay.singh"; email = "janmejay.singh@sentinelone.com"; ai = "copilot"; addons = [./home-manager/addons/zscalar.nix]; };
+        "janmejay@js1" = home-mgr-cfg-d { user = "janmejay.singh"; email = "janmejay.singh@sentinelone.com"; ai = "copilot"; addons = [
+          ./home-manager/addons/zscalar.nix
+          { nixvim.telescope = { layout = "vertical"; previewSize = 0.7; }; }
+        ]; };
 
         # Lima build VM: guest user `lima`, home /home/lima (pinned in lima/bvm.yaml).
         # Reuses ./home-manager/local_linux.nix via bvm.nix.
