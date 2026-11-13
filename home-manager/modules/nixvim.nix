@@ -22,6 +22,41 @@ let
       height = 0.4;
     };
   };
+  nearestQuote = ''
+    function()
+      local line, col = vim.api.nvim_get_current_line(), vim.fn.col('.')
+      local best, best_score
+      for _, q in ipairs({ '"', "'", '`' }) do
+        local open
+        for i = 1, #line do
+          if line:sub(i, i) == q and line:sub(i - 1, i - 1) ~= '\\' then
+            if open == nil then
+              open = i
+            else
+              local score = (open <= col and col <= i) and (1000000 + open) or -open
+              if best_score == nil or score > best_score then best, best_score = q, score end
+              open = nil
+            end
+          end
+        end
+      end
+      return best
+    end
+  '';
+  withQuotedText = picker: mkRaw ''
+    function()
+      local q = (${nearestQuote})()
+      local pos = vim.fn.getpos('.')
+      local reg, regtype = vim.fn.getreg('"'), vim.fn.getregtype('"')
+      if q then vim.cmd('normal! yi' .. q) end
+      local text = vim.fn.getreg('"')
+      vim.fn.setreg('"', reg, regtype)
+      vim.fn.setpos('.', pos)
+      if q and text ~= "" then
+        ${picker}
+      end
+    end
+  '';
   aiCmpSource = (
     if ai == "copilot" then [{ name = "copilot"; priority = 400; }]
     else if ai == "codeium" then [{ name = "codeium"; priority = 400; }]
@@ -178,6 +213,20 @@ in{
                 require('telescope.builtin').grep_string({ word_match = "-w" })
               end
             '';
+          }
+          {
+            key = "<leader>fqg";
+            action = withQuotedText "require('telescope.builtin').grep_string({ search = text })";
+          }
+          {
+            key = "<leader>fqf";
+            action = withQuotedText "require('telescope.builtin').find_files({ default_text = text })";
+          }
+          {
+            mode = [ "o" "x" ];
+            key = "iq";
+            options.expr = true;
+            action = mkRaw "function() local q = (${nearestQuote})() return q and ('i' .. q) or '<Esc>' end";
           }
           {
             action = "<CMD>LspStop<Enter>";
