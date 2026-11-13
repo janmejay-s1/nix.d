@@ -407,7 +407,7 @@ in{
             settings = {
               defaults = lib.optionalAttrs vertical {
                 layout_strategy = "vertical";
-                layout_config = telescope_layout_config;
+                layout_config.vertical = telescope_layout_config;
               } // {
                 mappings = {
                   i = {
