@@ -115,6 +115,7 @@ in{
           foldmethod = "indent";
           foldlevelstart = 99;
           undofile = true;
+          exrc = true;
         };
         extraConfigLua = ''
           vim.cmd('source ~/.config/sym_xlate.nvim.lua')

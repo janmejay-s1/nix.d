@@ -33,6 +33,7 @@ in {
          doCheck = false;
        };
        work_pkgs = with p; [
+            playwright-test
             libossp_uuid
             graphviz
             awscli2
